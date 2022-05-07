@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf8 -*-
 #
 #    Copyright 2014,2018 Mario Gomez <mario.gomez@teubi.co>
 #
@@ -20,10 +19,12 @@
 #    You should have received a copy of the GNU Lesser General Public License
 #    along with MFRC522-Python.  If not, see <http://www.gnu.org/licenses/>.
 #
-import spidev
+import logging
 import signal
 import time
-import logging
+
+import spidev
+
 
 class MFRC522:
     MAX_LEN = 16
@@ -129,7 +130,7 @@ class MFRC522:
         self.spi.open(bus, device)
         self.spi.max_speed_hz = spd
 
-        self.logger = logging.getLogger('mfrc522Logger')
+        self.logger = logging.getLogger("mfrc522Logger")
         self.logger.addHandler(logging.StreamHandler())
         level = logging.getLevelName(debugLevel)
         self.logger.setLevel(level)
@@ -159,7 +160,7 @@ class MFRC522:
 
     def AntennaOn(self):
         temp = self.Read_MFRC522(self.TxControlReg)
-        if (~(temp & 0x03)):
+        if ~(temp & 0x03):
             self.SetBitMask(self.TxControlReg, 0x03)
 
     def AntennaOff(self):
@@ -241,7 +242,7 @@ class MFRC522:
         TagType.append(reqMode)
         (status, backData, backBits) = self.MFRC522_ToCard(self.PCD_TRANSCEIVE, TagType)
 
-        if ((status != self.MI_OK) | (backBits != 0x10)):
+        if (status != self.MI_OK) | (backBits != 0x10):
             status = self.MI_ERR
 
         return (status, backBits)
@@ -259,7 +260,7 @@ class MFRC522:
 
         (status, backData, backBits) = self.MFRC522_ToCard(self.PCD_TRANSCEIVE, serNum)
 
-        if (status == self.MI_OK):
+        if status == self.MI_OK:
             i = 0
             if len(backData) == 5:
                 for i in range(4):
@@ -295,7 +296,7 @@ class MFRC522:
         buf = []
         buf.append(self.PICC_SElECTTAG)
         buf.append(0x70)
-        
+
         for i in range(5):
             buf.append(serNum[i])
 
@@ -367,10 +368,16 @@ class MFRC522:
         buff.append(crc[0])
         buff.append(crc[1])
         (status, backData, backLen) = self.MFRC522_ToCard(self.PCD_TRANSCEIVE, buff)
-        if not (status == self.MI_OK) or not (backLen == 4) or not ((backData[0] & 0x0F) == 0x0A):
+        if (
+            not (status == self.MI_OK)
+            or not (backLen == 4)
+            or not ((backData[0] & 0x0F) == 0x0A)
+        ):
             status = self.MI_ERR
 
-        self.logger.debug("%s backdata &0x0F == 0x0A %s" % (backLen, backData[0] & 0x0F))
+        self.logger.debug(
+            "%s backdata &0x0F == 0x0A %s" % (backLen, backData[0] & 0x0F)
+        )
         if status == self.MI_OK:
             buf = []
             for i in range(16):
@@ -380,11 +387,14 @@ class MFRC522:
             buf.append(crc[0])
             buf.append(crc[1])
             (status, backData, backLen) = self.MFRC522_ToCard(self.PCD_TRANSCEIVE, buf)
-            if not (status == self.MI_OK) or not (backLen == 4) or not ((backData[0] & 0x0F) == 0x0A):
+            if (
+                not (status == self.MI_OK)
+                or not (backLen == 4)
+                or not ((backData[0] & 0x0F) == 0x0A)
+            ):
                 self.logger.error("Error while writing")
             if status == self.MI_OK:
                 self.logger.debug("Data written")
-
 
     def MFRC522_DumpClassic1K(self, key, uid):
         for i in range(64):
