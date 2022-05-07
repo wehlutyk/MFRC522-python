@@ -13,10 +13,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/pimylifeup/MFRC522-python",
     packages=setuptools.find_packages(),
-    install_requires=[
-        'RPi.GPIO',
-        'spidev'
-        ],
+    install_requires=["spidev"],
     classifiers=[
         "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3",
