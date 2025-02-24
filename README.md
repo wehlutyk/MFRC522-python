@@ -16,7 +16,9 @@ The following code will read a tag from the MFRC522
 from time import sleep
 import sys
 from mfrc522 import SimpleMFRC522
-reader = SimpleMFRC522()
+reader = SimpleMFRC522()  # /dev/spidev0.0, pin#24/GPIO8
+# For the second RC522
+#reader = SimpleMFRC522(device=1)  # /dev/spidev0.1, pin#26/GPIO7
 
 while True:
     print("Hold a tag near the reader")
